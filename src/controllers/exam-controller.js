@@ -17,27 +17,31 @@ export const create = async (req, res, next) => {
     if (!findGroup) {
       return res.status(400).json({ message: "Group not found" });
     }
-    const findExam = await Exam.findOne({
+    const findExam = await Exam.find({
       groupId: group_id,
     });
-    if (findExam) {
+    const examName = findExam.name;
+    const checkName = findExam.some((exam) => exam.name === name);
+    if (findExam && checkName) {
       return res.status(400).json({ message: "Exam already exists" });
     }
-    let dateString = finishedDate;
-    let dateParts = dateString.split(".");
-    let jsDate = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
-    const newExam = await Exam.create({
-      name,
-      groupId: group_id,
-      finishedDate: jsDate,
-      passing_score,
-      file,
-    });
-    if (newExam) {
-      return res.status(201).json({
-        message: "Exam created successfully",
-        exam: newExam,
+    if (findExam && name != examName) {
+      let dateString = finishedDate;
+      let dateParts = dateString.split(".");
+      let jsDate = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
+      const newExam = await Exam.create({
+        name,
+        groupId: group_id,
+        finishedDate: jsDate,
+        passing_score,
+        file,
       });
+      if (newExam) {
+        return res.status(201).json({
+          message: "Exam created successfully",
+          exam: newExam,
+        });
+      }
     }
   } catch (error) {
     next(error);
