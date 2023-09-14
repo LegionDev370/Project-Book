@@ -56,7 +56,7 @@ export const updExmResult = async (req, res, next) => {
       const minutesDifference = Math.trunc(
         Math.floor(timeDifference / (1000 * 60)) / 5
       );
-      const checkScore = score - minutesDifference;
+      const checkScore = score - minutesDifference * 5;
       if (checkScore < 1) {
         const update = await ExamResult.findByIdAndUpdate(id, {
           ball: 0,
